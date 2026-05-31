@@ -133,3 +133,20 @@ func.func @aten.permute$identity_permutation(%arg0: !torch.vtensor<[64,32,16,8,4
   %1 = torch.aten.permute %arg0, %0 : !torch.vtensor<[64,32,16,8,4],f32>, !torch.list<int> -> !torch.vtensor<[64,32,16,8,4],f32>
   return %1 : !torch.vtensor<[64,32,16,8,4],f32>
 }
+
+// -----
+
+// Verify that diag_embed with non-zero offset clamps the extract index
+// to prevent out-of-bounds access on the input tensor.
+
+// CHECK-LABEL:   func.func @torch.aten.diag_embed$positive_offset(
+// CHECK:           %[[C2:.*]] = arith.constant 2 : index
+// CHECK:           %[[CLAMPED:.*]] = arith.minui %{{.*}}, %[[C2]] : index
+// CHECK:           %[[EXTRACTED:.*]] = tensor.extract %{{.*}}[%[[CLAMPED]]] : tensor<3xf32>
+func.func @torch.aten.diag_embed$positive_offset(%arg0: !torch.vtensor<[3],f32>) -> !torch.vtensor<[4,4],f32> {
+  %int1 = torch.constant.int 1
+  %int0 = torch.constant.int 0
+  %int_neg1 = torch.constant.int -1
+  %0 = torch.aten.diag_embed %arg0, %int1, %int0, %int_neg1 : !torch.vtensor<[3],f32>, !torch.int, !torch.int, !torch.int -> !torch.vtensor<[4,4],f32>
+  return %0 : !torch.vtensor<[4,4],f32>
+}

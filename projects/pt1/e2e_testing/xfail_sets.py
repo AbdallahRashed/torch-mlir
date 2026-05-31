@@ -61,11 +61,6 @@ if torch_version_for_comparison() < version.parse("2.5.0.dev"):
     }
 
 LINALG_CRASHING_SET = {
-    # Runtime op verification: Out of bounds access
-    "AtenDiagEmbedNegOffsetDiag_basic",
-    "AtenDiagEmbedNonDefault4DDiag_basic",
-    "AtenDiagEmbedOffsetDiag_basic",
-    "AtenDiagEmbedRevDimDiag_basic",
     "AtenEmbeddingBagStaticModule_basic",
     "AtenEmbeddingBagSumExample_basic",
     "Aten_EmbeddingBagExample_basic",
